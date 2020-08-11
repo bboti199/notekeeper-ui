@@ -5,9 +5,10 @@ import { PrivateRoute } from './components/routing/PrivateRoute';
 import { useEffect } from 'react';
 import { useAuthContext } from './context';
 import { Firebase } from './firebase/firebase';
+import { Flex, Spinner } from '@chakra-ui/core';
 
 function App() {
-  const [, dispatch] = useAuthContext();
+  const [{ initialLoading }, dispatch] = useAuthContext();
 
   useEffect(() => {
     const unsubscribe = Firebase.auth().onAuthStateChanged((user) => {
@@ -19,6 +20,20 @@ function App() {
 
     return () => unsubscribe();
   }, [dispatch]);
+
+  if (initialLoading) {
+    return (
+      <Flex
+        height='100vh'
+        width='100%'
+        direction='column'
+        align='center'
+        justify='center'
+      >
+        <Spinner size='xl' />
+      </Flex>
+    );
+  }
 
   return (
     <Router>

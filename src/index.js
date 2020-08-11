@@ -4,15 +4,17 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import { ReactQueryDevtools } from 'react-query-devtools';
 import { theme, ThemeProvider, CSSReset } from '@chakra-ui/core';
-import { AuthProvider, initialState, reducer } from './context';
+import { AuthProvider, authInitialState, authReducer } from './context';
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <AuthProvider initialState={initialState} reducer={reducer}>
+      <AuthProvider initialState={authInitialState} reducer={authReducer}>
         <CSSReset />
         <App />
+        <ReactQueryDevtools initialIsOpen />
       </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>,
