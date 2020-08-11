@@ -4,9 +4,17 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import { theme, ThemeProvider, CSSReset } from '@chakra-ui/core';
+import { AuthProvider, initialState, reducer } from './context';
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <AuthProvider initialState={initialState} reducer={reducer}>
+        <CSSReset />
+        <App />
+      </AuthProvider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
