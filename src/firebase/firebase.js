@@ -13,5 +13,3 @@ const firebaseConfig = {
 };
 
 export const Firebase = firebase.initializeApp(firebaseConfig);
-
-export const auth = Firebase.auth;
