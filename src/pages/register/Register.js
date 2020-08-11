@@ -13,7 +13,7 @@ import {
   InputRightElement,
   Spinner,
 } from '@chakra-ui/core';
-import { FiAtSign, FiEye, FiEyeOff, FiKey } from 'react-icons/fi';
+import { FiUser, FiEye, FiEyeOff, FiKey, FiAtSign } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
@@ -29,15 +29,20 @@ const schema = yup.object().shape({
     .string()
     .email('You must enter a valid email address!')
     .required('Email is required'),
+  username: yup.string().required('Username is required'),
   password: yup
     .string()
     .required('Password is required!')
     .min(6, 'Your password must have at least 6 characters'),
+  passwordConfirm: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Passwords must match'),
 });
 
-export const Login = () => {
+export const Register = () => {
   const [{ user, error, loading }, dispatch] = useAuthContext();
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordConfirmVisible, setPasswordConfirmVisible] = useState(false);
   const { register, errors, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
@@ -45,10 +50,14 @@ export const Login = () => {
   const onSubmit = async (data) => {
     dispatch({ type: 'AUTH_START' });
     try {
-      await Firebase.auth().signInWithEmailAndPassword(
+      const user = await Firebase.auth().createUserWithEmailAndPassword(
         data.email,
         data.password
       );
+      await Firebase.auth().currentUser.updateProfile({
+        displayName: data.username,
+        photoURL: `https://api.adorable.io/avatars/285/${user.user.uid}.png`,
+      });
       dispatch({ type: 'AUTH_SUCCESS' });
     } catch (err) {
       dispatch({ type: 'AUTH_ERROR', payload: err.message });
@@ -81,10 +90,12 @@ export const Login = () => {
     >
       <MotionFlex
         initial={{
-          translateY: -1000,
+          opacity: 0,
+          translateX: -1000,
         }}
         animate={{
-          translateY: 0,
+          opacity: 1,
+          translateX: 0,
         }}
         transition={{
           duration: 0.5,
@@ -93,7 +104,7 @@ export const Login = () => {
           stiffness: 80,
         }}
         backgroundColor='#fff'
-        width={['100%', '80%', '450px', '550px']}
+        width={['100%', '80%', '450px', '600px']}
         align='start'
         paddingX='2rem'
         paddingY='3rem'
@@ -103,9 +114,9 @@ export const Login = () => {
       >
         <Box marginBottom='4rem' marginTop='2rem'>
           <Text fontWeight='bold' fontSize='3xl'>
-            Welcome.
+            Hey there.
           </Text>
-          <Text fontSize='lg'>Please sign in to continue!</Text>
+          <Text fontSize='lg'>Let's get started by signing up!</Text>
         </Box>
 
         <Box width='100%' marginBottom='2rem'>
@@ -121,6 +132,21 @@ export const Login = () => {
           </InputGroup>
           <Flex width='100%' direction='column' align='center' mt='15px'>
             <Text color='red.500'>{errors.email?.message}</Text>
+          </Flex>
+        </Box>
+
+        <Box width='100%' marginBottom='2rem'>
+          <InputGroup>
+            <InputLeftAddon children={<FiUser />} />
+            <Input
+              placeholder='Username'
+              name='username'
+              type='text'
+              ref={register}
+            />
+          </InputGroup>
+          <Flex width='100%' direction='column' align='center' mt='15px'>
+            <Text color='red.500'>{errors.username?.message}</Text>
           </Flex>
         </Box>
 
@@ -143,13 +169,32 @@ export const Login = () => {
           </Flex>
         </Box>
 
+        <Box width='100%' marginBottom='2rem'>
+          <InputGroup>
+            <InputLeftAddon children={<FiKey />} />
+            <Input
+              placeholder='Confirm your password'
+              type={passwordConfirmVisible ? 'text' : 'password'}
+              name='passwordConfirm'
+              ref={register}
+            />
+            <InputRightElement
+              onClick={() => setPasswordConfirmVisible(!passwordConfirmVisible)}
+              children={passwordConfirmVisible ? <FiEyeOff /> : <FiEye />}
+            />
+          </InputGroup>
+          <Flex width='100%' direction='column' align='center' mt='15px'>
+            <Text color='red.500'>{errors.passwordConfirm?.message}</Text>
+          </Flex>
+        </Box>
+
         <Flex width='100%' flexDirection='column'>
           <Button
             type='submit'
             variantColor='blue'
             onClick={handleSubmit(onSubmit)}
           >
-            {loading ? <Spinner /> : 'LOG IN'}
+            {loading ? <Spinner /> : 'REGISTER'}
           </Button>
         </Flex>
         <Flex width='100%' direction='column' align='center' mt='15px'>
@@ -159,8 +204,8 @@ export const Login = () => {
         </Flex>
 
         <Flex width='100%' marginTop='1rem' align='center' direction='column'>
-          <Link as={RouterLink} to='/register' color='blue.500'>
-            Do not have an account? Register here
+          <Link as={RouterLink} to='/login' color='blue.500'>
+            Already registered? Log in here!
           </Link>
           <Text marginY='1.5rem'>or</Text>
           <Button width='100%' onClick={googleLogin}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Login, Home } from './pages';
+import { Login, Home, Register } from './pages';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { PrivateRoute } from './components/routing/PrivateRoute';
 import { useEffect } from 'react';
@@ -25,6 +25,7 @@ function App() {
       <Switch>
         <PrivateRoute exact path='/' component={Home} />
         <Route exact path='/login' component={Login} />
+        <Route exact path='/register' component={Register} />
       </Switch>
     </Router>
   );
