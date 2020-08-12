@@ -8,8 +8,7 @@ import {
 } from '@chakra-ui/core';
 import { FiXCircle, FiSearch } from 'react-icons/fi';
 
-export const Searchbar = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+export const Searchbar = ({ searchTerm, setSearchTerm }) => {
   const [clearVisible, setClearVisible] = useState(false);
 
   const handleTermChange = (e) => {

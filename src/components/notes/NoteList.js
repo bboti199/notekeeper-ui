@@ -17,6 +17,7 @@ export const NoteList = ({ notes }) => {
           title={note.title}
           tags={note.tags}
           date={note.created_at}
+          id={note.id}
         />
       ))}
     </Flex>
